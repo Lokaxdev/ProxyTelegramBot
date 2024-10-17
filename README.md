@@ -31,8 +31,11 @@
 
 # Usage
 Go to telebot file and change "YOUR_TELEGRAM_BOT_TOKEN" To your telegram bot token
+npm install node-telegram-bot-api node-fetch proxy-agent
 
 node telebot.js
+
+/sendproxy
 
 # Credits
 L
