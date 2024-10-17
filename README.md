@@ -37,10 +37,14 @@ node telebot.js
 
 /sendproxy
 
-# Credits
+# Credits 
 L
 Whatsapp contact : 6285737286718
 
-# WARNING
+# WARNING! ⚠️ 
 Please credit me if you want to change / rename it
 This Script is still in progress, it will be better frfr!!
+
+# Changelog :
+- Fixed thingy
+- Makes the bot send proxy in a .txt file instead on the chat
