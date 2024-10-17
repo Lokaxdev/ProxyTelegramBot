@@ -1,5 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api');
 const fetch = require('node-fetch');
+const fs = require('fs'); // Import the fs module
 
 // Replace with your Telegram Bot Token
 const token = 'YOUR_TELEGRAM_BOT_TOKEN';
@@ -7,70 +8,70 @@ const bot = new TelegramBot(token, { polling: true });
 
 // Extensive list of free proxy sources
 const proxySources = [
-    "https://www.proxy-list.download/api/v1/get?type=socks5",      // SOCKS5 proxy list
-    "https://www.proxy-list.download/api/v1/get?type=https",       // HTTPS proxy list
-    "https://www.proxy-list.download/api/v1/get?type=http",        // HTTP proxy list
-    "https://www.proxyscan.io/api/proxy?type=socks5",              // Proxyscan SOCKS5 API
-    "https://www.proxyscan.io/api/proxy?type=https",               // Proxyscan HTTPS API
-    "https://www.proxyscan.io/api/proxy?type=http",                // Proxyscan HTTP API
-    "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=socks5&timeout=10000",  // ProxyScrape SOCKS5
-    "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=10000",    // ProxyScrape HTTP
-    "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=https&timeout=10000",   // ProxyScrape HTTPS
-    "https://spys.me/proxy.txt",                                   // Spys.me proxy list
-    "https://www.sslproxies.org/",                                 // SSLProxies.org
-    "https://free-proxy-list.net/",                                // Free Proxy List (HTTP/HTTPS)
-    "https://us-proxy.org/",                                       // US Proxy list (HTTP/HTTPS)
-    "https://socks-proxy.net/",                                    // SOCKS Proxy list
-    "https://www.proxy-listen.de/Proxy/Proxyliste.html",           // Proxy-Listen.de (SOCKS4, SOCKS5, HTTP)
-    "https://openproxy.space/list/socks5",                         // OpenProxy SOCKS5
-    "https://openproxy.space/list/http",                           // OpenProxy HTTP
-    "https://www.my-proxy.com/free-proxy-list.html",               // My-Proxy HTTP
-    "https://hidemy.name/en/proxy-list/?type=hs&anon=34#list",     // HideMyName (HTTPS and SOCKS5)
-    "https://www.cool-proxy.net/proxies/http_proxy_list/country_code:/port:/anonymous:1", // Cool-Proxy (Anonymous HTTP)
-    "https://proxy-daily.com/",                                    // Proxy-Daily free proxy list (HTTP, HTTPS, SOCKS)
-    "https://www.freeproxylists.net/",                             // FreeProxyLists.net (HTTP, HTTPS, SOCKS4/5)
-    "https://proxoid.net/",                                        // Proxoid (SOCKS5 and HTTP)
-    "https://proxysearcher.sourceforge.io/Proxy%20List.php?type=http", // ProxySearcher (HTTP)
-    "https://www.proxydb.net/",                                    // ProxyDB.net
-    "https://www.advanced.name/freeproxy",                         // AdvancedName (SOCKS5, HTTP)
-    "https://api.getproxylist.com/proxy",                          // GetProxyList API
-    "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt", // SpeedX SOCKS5
-    "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list.txt", // Clarketm proxy list
-    "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/http.txt", // ShiftyTR HTTP proxy list
-    "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/https.txt", // ShiftyTR HTTPS proxy list
-    "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks4.txt", // ShiftyTR SOCKS4 proxy list
-    "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks5.txt", // ShiftyTR SOCKS5 proxy list
-    "https://raw.githubusercontent.com/mertguvencli/http-proxy-list/main/proxy-list/data.txt", // Mert HTTP proxy list
-    "https://raw.githubusercontent.com/hookzof/socks5_list/master/proxy.txt", // HookzOf SOCKS5
-    "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-socks5.txt", // JetKai SOCKS5
-    "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-http.txt", // JetKai HTTP
-    "https://www.proxylists.net/",                                 // ProxyLists.net (Free proxies)
-    "https://www.proxynova.com/proxy-server-list/",                // ProxyNova (Updated list)
-    "https://www.proxy-list.download/api/v1/get?type=all",        // All types of proxies (HTTP, HTTPS, SOCKS)
-    "https://www.proxysite.com/proxy-list",                        // Proxysite.com proxy list
-    "https://www.freeproxycafe.com/",                              // FreeProxyCafe (Rotating list)
-    "https://www.pacproxy.com/free-proxy-list",                    // PACProxy (Free Proxy)
-    "https://www.proxylist1.com/",                                 // ProxyList1 (Multiple types)
-    "https://www.proxiesforrent.com/free-proxy-list/",             // Proxies For Rent (Free proxy list)
-    "https://free-proxy.cz/en/proxylist/country/all/1",           // Free Proxy CZ
-    "https://www.getproxylist.com/",                               // GetProxyList
-    "https://www.gatherproxy.com/proxylist",                       // GatherProxy
-    "https://www.my-proxy.com/free-proxy-list.html",               // My-Proxy (free list)
-    "https://www.proxytube.com/",                                  // ProxyTube (Proxy List)
-    "https://www.proxypanel.com/free-proxy-list/",                // ProxyPanel (Free Proxy)
-    "https://www.proxylists.net/free-proxy-list/",                 // ProxyLists Free Proxy
-    "https://www.proxy-list.net/",                                  // Proxy List (Various Types)
-    "https://www.dizproxy.com/",                                   // Dizproxy (Public Proxies)
-    "https://www.proxydb.net/api/proxy?count=50&type=http",       // ProxyDB (50 random HTTP proxies)
-    "https://www.proxydb.net/api/proxy?count=50&type=https",      // ProxyDB (50 random HTTPS proxies)
-    "https://www.proxydb.net/api/proxy?count=50&type=socks5",     // ProxyDB (50 random SOCKS5 proxies)
-    "https://proxies.world/",                                      // Proxies World
-    "https://pubproxy.com/api/proxy?count=20",                    // PubProxy (20 random proxies)
-    "https://www.proxy-list.download/api/v1/get?type=socks4",     // SOCKS4 proxy list
-    "https://www.freeproxy.world/",                                 // Free Proxy World
-    "https://www.proxyscan.io/api/proxy?type=socks4",              // Proxyscan SOCKS4 API
-    "https://www.proxysite.com/api/proxy",                         // Proxysite API
-    "https://github.com/robertknight/Proxy-List/raw/master/proxylist.txt", // GitHub Proxy List
+    "https://www.proxy-list.download/api/v1/get?type=socks5",
+    "https://www.proxy-list.download/api/v1/get?type=https",
+    "https://www.proxy-list.download/api/v1/get?type=http",
+    "https://www.proxyscan.io/api/proxy?type=socks5",
+    "https://www.proxyscan.io/api/proxy?type=https",
+    "https://www.proxyscan.io/api/proxy?type=http",
+    "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=socks5&timeout=10000",
+    "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=10000",
+    "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=https&timeout=10000",
+    "https://spys.me/proxy.txt",
+    "https://www.sslproxies.org/",
+    "https://free-proxy-list.net/",
+    "https://us-proxy.org/",
+    "https://socks-proxy.net/",
+    "https://www.proxy-listen.de/Proxy/Proxyliste.html",
+    "https://openproxy.space/list/socks5",
+    "https://openproxy.space/list/http",
+    "https://www.my-proxy.com/free-proxy-list.html",
+    "https://hidemy.name/en/proxy-list/?type=hs&anon=34#list",
+    "https://www.cool-proxy.net/proxies/http_proxy_list/country_code:/port:/anonymous:1",
+    "https://proxy-daily.com/",
+    "https://www.freeproxylists.net/",
+    "https://proxoid.net/",
+    "https://proxysearcher.sourceforge.io/Proxy%20List.php?type=http",
+    "https://www.proxydb.net/",
+    "https://www.advanced.name/freeproxy",
+    "https://api.getproxylist.com/proxy",
+    "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt",
+    "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list.txt",
+    "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/http.txt",
+    "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/https.txt",
+    "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks4.txt",
+    "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks5.txt",
+    "https://raw.githubusercontent.com/mertguvencli/http-proxy-list/main/proxy-list/data.txt",
+    "https://raw.githubusercontent.com/hookzof/socks5_list/master/proxy.txt",
+    "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-socks5.txt",
+    "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-http.txt",
+    "https://www.proxylists.net/",
+    "https://www.proxy-nova.com/proxy-server-list/",
+    "https://www.proxy-list.download/api/v1/get?type=all",
+    "https://www.proxysite.com/proxy-list",
+    "https://www.freeproxycafe.com/",
+    "https://www.pacproxy.com/free-proxy-list",
+    "https://www.proxylist1.com/",
+    "https://www.proxiesforrent.com/free-proxy-list/",
+    "https://free-proxy.cz/en/proxylist/country/all/1",
+    "https://www.getproxylist.com/",
+    "https://www.gatherproxy.com/proxylist",
+    "https://www.my-proxy.com/free-proxy-list.html",
+    "https://www.proxytube.com/",
+    "https://www.proxy-panel.com/free-proxy-list/",
+    "https://www.proxy-lists.net/free-proxy-list/",
+    "https://www.proxylist.net/",
+    "https://www.dizproxy.com/",
+    "https://www.proxydb.net/api/proxy?count=50&type=http",
+    "https://www.proxydb.net/api/proxy?count=50&type=https",
+    "https://www.proxydb.net/api/proxy?count=50&type=socks5",
+    "https://proxies.world/",
+    "https://pubproxy.com/api/proxy?count=20",
+    "https://www.proxy-list.download/api/v1/get?type=socks4",
+    "https://www.freeproxy.world/",
+    "https://www.proxyscan.io/api/proxy?type=socks4",
+    "https://www.proxysite.com/api/proxy",
+    "https://github.com/robertknight/Proxy-List/raw/master/proxylist.txt",
 ];
 
 // Function to fetch proxies from all sources
@@ -124,7 +125,18 @@ bot.onText(/\/sendproxy/, async (msg) => {
 
     if (workingProxies.length > 0) {
         const proxyList = workingProxies.map(p => `${p.proxy} (Resolved IP: ${p.ip})`).join('\n');
-        bot.sendMessage(chatId, `Here are the active proxies:\n\n${proxyList}`);
+        
+        // Write the working proxies to LokaXProxy.txt
+        fs.writeFile('LokaXProxy.txt', proxyList, (err) => {
+            if (err) {
+                console.error('Error writing to file', err);
+                bot.sendMessage(chatId, "Failed to create proxy file.");
+                return;
+            }
+
+            // Send the file back to the user
+            bot.sendDocument(chatId, 'LokaXProxy.txt', {}, { caption: "Here are the active proxies:" });
+        });
     } else {
         bot.sendMessage(chatId, "No active proxies found.");
     }
