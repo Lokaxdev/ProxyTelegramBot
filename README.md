@@ -40,3 +40,7 @@ node telebot.js
 # Credits
 L
 Whatsapp contact : 6285737286718
+
+# WARNING
+Please credit me if you want to change / rename it
+This Script is still in progress, it will be better frfr!!
