@@ -3,14 +3,15 @@ const fetch = require('node-fetch');
 const fs = require('fs'); // Import the fs module
 
 // Replace with your Telegram Bot Token
-const token = 'YOUR_TELEGRAM_BOT_TOKEN';
+const token = 'YOUR_TELEGRAM_BOT_TOKEN'; // Insert your bot token here
 const bot = new TelegramBot(token, { polling: true });
 
 // Your Telegram Channel Username or Channel ID (e.g., "@your_channel" or "-100xxxxxxxxxx")
-const channelId = '@your_channel'; // Use the username with '@' for a public channel
+const channelId = '@your_channel'; // Use the username with '@' for a public channel, or the channel ID for private channels
 
-// Extensive list of free proxy sources
+// Extensive list of free proxy sources, including more updated ones
 const proxySources = [
+    // Existing sources
     "https://www.proxy-list.download/api/v1/get?type=socks5",
     "https://www.proxy-list.download/api/v1/get?type=https",
     "https://www.proxy-list.download/api/v1/get?type=http",
@@ -21,7 +22,44 @@ const proxySources = [
     "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=10000",
     "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=https&timeout=10000",
     "https://spys.me/proxy.txt",
-    // Add more sources as needed
+    "https://www.sslproxies.org/",
+    "https://free-proxy-list.net/",
+    "https://us-proxy.org/",
+    "https://socks-proxy.net/",
+    "https://openproxy.space/list/socks5",
+    "https://openproxy.space/list/http",
+    "https://www.my-proxy.com/free-proxy-list.html",
+    "https://hidemy.name/en/proxy-list/?type=hs&anon=34#list",
+    "https://proxy-daily.com/",
+
+    // Newly added proxy sources (updated)
+    "https://www.cool-proxy.net/proxies/http_proxy_list/country_code:/port:/anonymous:1",
+    "https://free-proxy-list.net/anonymous-proxy.html",
+    "https://proxylist.geonode.com/api/proxy-list?limit=300&page=1&sort_by=lastChecked&sort_type=desc",
+    "https://www.proxyscan.io/api/proxy?type=socks4",
+    "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-http.txt",
+    "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-socks5.txt",
+    "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/http.txt",
+    "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/https.txt",
+    "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks4.txt",
+    "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks5.txt",
+    "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list.txt",
+    "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt",
+    "https://raw.githubusercontent.com/roosterkid/openproxylist/main/SOCKS5_RAW.txt",
+    "https://raw.githubusercontent.com/roosterkid/openproxylist/main/HTTPS_RAW.txt",
+    "https://raw.githubusercontent.com/roosterkid/openproxylist/main/HTTP_RAW.txt",
+    "https://openproxy.space/list/https",
+    "https://proxylist.geonode.com/api/proxy-list?limit=300&page=1&sort_by=lastChecked&sort_type=desc&protocols=http%2Chttps",
+    "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=socks4&timeout=10000",
+    "https://api.proxyscrape.com/?request=getproxies&proxytype=socks4",
+    "https://api.proxyscrape.com/?request=getproxies&proxytype=socks5",
+    "https://api.proxyscrape.com/?request=getproxies&proxytype=http",
+    "https://www.proxy-list.download/api/v1/get?type=socks4",
+    "https://raw.githubusercontent.com/mertguvencli/http-proxy-list/main/proxy-list/data.txt",
+    "https://proxyspace.pro/http",
+    "https://proxyspace.pro/https",
+    "https://proxyspace.pro/socks4",
+    "https://proxyspace.pro/socks5",
 ];
 
 // Function to fetch proxies from all sources
@@ -53,8 +91,7 @@ async function testProxy(proxy) {
     try {
         const response = await fetch(url, options);
         if (response.ok) {
-            const json = await response.json();
-            return { proxy, ip: json.origin }; // Return working proxy with the resolved IP
+            return proxy; // Return the working proxy
         }
     } catch (error) {
         console.error(`Proxy failed: ${proxy}`, error.message);
@@ -72,10 +109,11 @@ async function sendProxiesToChannel() {
     const workingProxies = aliveProxies.filter(proxy => proxy !== null);
 
     if (workingProxies.length > 0) {
-        const proxyList = workingProxies.map(p => `${p.proxy} (Resolved IP: ${p.ip})`).join('\n');
+        // Format the proxies in "IP : Port" format
+        const proxyList = workingProxies.map(p => p.trim().replace(/(\d+\.\d+\.\d+\.\d+):(\d+)/, "$1 : $2")).join('\n');
         
-        // Write the working proxies to LokaXProxy.txt
-        fs.writeFile('LokaXProxy.txt', proxyList, (err) => {
+        // Write the working proxies to BERSERKPROXY.txt
+        fs.writeFile('BERSERKPROXY.txt', proxyList, (err) => {
             if (err) {
                 console.error('Error writing to file', err);
                 bot.sendMessage(channelId, "Failed to create proxy file.");
@@ -92,7 +130,7 @@ FREE PROXY AT https://t.me/berserkproxy
             `;
             
             // Send the file to the channel with the custom message
-            bot.sendDocument(channelId, 'LokaXProxy.txt', {}, { caption: message });
+            bot.sendDocument(channelId, 'BERSERKPROXY.txt', {}, { caption: message });
         });
     } else {
         bot.sendMessage(channelId, "No active proxies found.");
