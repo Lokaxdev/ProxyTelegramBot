@@ -1,3 +1,8 @@
+//CREDITS : L
+//MADE IN JAVASCRIPT
+//MADE WITH LOVE
+//SKID? GTFO!
+
 const TelegramBot = require('node-telegram-bot-api');
 const fetch = require('node-fetch');
 const fs = require('fs'); // Import the fs module
@@ -5,6 +10,9 @@ const fs = require('fs'); // Import the fs module
 // Replace with your Telegram Bot Token
 const token = 'YOUR_TELEGRAM_BOT_TOKEN';
 const bot = new TelegramBot(token, { polling: true });
+
+// Your Telegram Group Chat ID (replace with the actual group chat ID)
+const groupId = 'YOUR_GROUP_CHAT_ID'; // Use a negative ID (e.g., -123456789)
 
 // Extensive list of free proxy sources
 const proxySources = [
@@ -113,9 +121,8 @@ async function testProxy(proxy) {
     return null; // Return null if the proxy fails
 }
 
-// Command handler for /sendproxy
-bot.onText(/\/sendproxy/, async (msg) => {
-    const chatId = msg.chat.id;
+// Function to fetch, test proxies and send them to the group
+async function sendProxiesToGroup() {
     const proxies = await getProxies();
     console.log(`Total proxies fetched: ${proxies.length}`);
 
@@ -130,17 +137,22 @@ bot.onText(/\/sendproxy/, async (msg) => {
         fs.writeFile('LokaXProxy.txt', proxyList, (err) => {
             if (err) {
                 console.error('Error writing to file', err);
-                bot.sendMessage(chatId, "Failed to create proxy file.");
+                bot.sendMessage(groupId, "Failed to create proxy file.");
                 return;
             }
 
-            // Send the file back to the user
-            bot.sendDocument(chatId, 'LokaXProxy.txt', {}, { caption: "Here are the active proxies:" });
+            // Send the file to the group
+            bot.sendDocument(groupId, 'LokaXProxy.txt', {}, { caption: "Here are the active proxies:" });
         });
     } else {
-        bot.sendMessage(chatId, "No active proxies found.");
+        bot.sendMessage(groupId, "No active proxies found.");
     }
-});
+}
+
+// Schedule sending the proxy list every 5 minutes (300,000 milliseconds)
+setInterval(() => {
+    sendProxiesToGroup();
+}, 300000); // 300,000 milliseconds = 5 minutes
 
 // Log bot start
 bot.on('polling_error', (error) => {
