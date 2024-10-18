@@ -30,10 +30,8 @@
 - Free proxies!
 
 # Usage
-Go to telebot.js and change "YOUR_TELEGRAM_BOT_TOKEN" To your telegram bot token
-```
-npm install node-telegram-bot-api node-fetch proxy-agent
-```
+Go to telebot.js and change "YOUR_TELEGRAM_BOT_TOKEN" With your telegram bot token
+Go to telebot.js and change "YOUR_GROUP_CHAT_ID" With your telegram group chat id
 ```
 npm start
 ```
@@ -54,6 +52,7 @@ This Script is still in progress, it will be better frfr!!
 - Added more proxies
 - Makes the bot automatically sends the proxy on the groupchat
 - Added more thingy
+- Added package.json
 - Removed herobrine 😱
  
  ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
