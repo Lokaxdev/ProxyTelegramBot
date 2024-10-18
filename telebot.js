@@ -1,8 +1,3 @@
-//CREDITS : L
-//MADE IN JAVASCRIPT
-//MADE WITH LOVE
-//SKID? GTFO!
-
 const TelegramBot = require('node-telegram-bot-api');
 const fetch = require('node-fetch');
 const fs = require('fs'); // Import the fs module
@@ -11,8 +6,8 @@ const fs = require('fs'); // Import the fs module
 const token = 'YOUR_TELEGRAM_BOT_TOKEN';
 const bot = new TelegramBot(token, { polling: true });
 
-// Your Telegram Group Chat ID (replace with the actual group chat ID)
-const groupId = 'YOUR_GROUP_CHAT_ID'; // Use a negative ID (e.g., -123456789)
+// Your Telegram Channel Username or Channel ID (e.g., "@your_channel" or "-100xxxxxxxxxx")
+const channelId = '@your_channel'; // Use the username with '@' for a public channel
 
 // Extensive list of free proxy sources
 const proxySources = [
@@ -26,60 +21,7 @@ const proxySources = [
     "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=10000",
     "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=https&timeout=10000",
     "https://spys.me/proxy.txt",
-    "https://www.sslproxies.org/",
-    "https://free-proxy-list.net/",
-    "https://us-proxy.org/",
-    "https://socks-proxy.net/",
-    "https://www.proxy-listen.de/Proxy/Proxyliste.html",
-    "https://openproxy.space/list/socks5",
-    "https://openproxy.space/list/http",
-    "https://www.my-proxy.com/free-proxy-list.html",
-    "https://hidemy.name/en/proxy-list/?type=hs&anon=34#list",
-    "https://www.cool-proxy.net/proxies/http_proxy_list/country_code:/port:/anonymous:1",
-    "https://proxy-daily.com/",
-    "https://www.freeproxylists.net/",
-    "https://proxoid.net/",
-    "https://proxysearcher.sourceforge.io/Proxy%20List.php?type=http",
-    "https://www.proxydb.net/",
-    "https://www.advanced.name/freeproxy",
-    "https://api.getproxylist.com/proxy",
-    "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt",
-    "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list.txt",
-    "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/http.txt",
-    "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/https.txt",
-    "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks4.txt",
-    "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks5.txt",
-    "https://raw.githubusercontent.com/mertguvencli/http-proxy-list/main/proxy-list/data.txt",
-    "https://raw.githubusercontent.com/hookzof/socks5_list/master/proxy.txt",
-    "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-socks5.txt",
-    "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-http.txt",
-    "https://www.proxylists.net/",
-    "https://www.proxy-nova.com/proxy-server-list/",
-    "https://www.proxy-list.download/api/v1/get?type=all",
-    "https://www.proxysite.com/proxy-list",
-    "https://www.freeproxycafe.com/",
-    "https://www.pacproxy.com/free-proxy-list",
-    "https://www.proxylist1.com/",
-    "https://www.proxiesforrent.com/free-proxy-list/",
-    "https://free-proxy.cz/en/proxylist/country/all/1",
-    "https://www.getproxylist.com/",
-    "https://www.gatherproxy.com/proxylist",
-    "https://www.my-proxy.com/free-proxy-list.html",
-    "https://www.proxytube.com/",
-    "https://www.proxy-panel.com/free-proxy-list/",
-    "https://www.proxy-lists.net/free-proxy-list/",
-    "https://www.proxylist.net/",
-    "https://www.dizproxy.com/",
-    "https://www.proxydb.net/api/proxy?count=50&type=http",
-    "https://www.proxydb.net/api/proxy?count=50&type=https",
-    "https://www.proxydb.net/api/proxy?count=50&type=socks5",
-    "https://proxies.world/",
-    "https://pubproxy.com/api/proxy?count=20",
-    "https://www.proxy-list.download/api/v1/get?type=socks4",
-    "https://www.freeproxy.world/",
-    "https://www.proxyscan.io/api/proxy?type=socks4",
-    "https://www.proxysite.com/api/proxy",
-    "https://github.com/robertknight/Proxy-List/raw/master/proxylist.txt",
+    // Add more sources as needed
 ];
 
 // Function to fetch proxies from all sources
@@ -90,8 +32,7 @@ async function getProxies() {
         try {
             const response = await fetch(source);
             const proxyList = await response.text();
-            // If the source contains plain proxies, split them by line and add to the list
-            allProxies = allProxies.concat(proxyList.split("\n").filter(Boolean));
+            allProxies = allProxies.concat(proxyList.split("\n").filter(Boolean)); // Clean up blank lines
         } catch (error) {
             console.error(`Error fetching from ${source}:`, error);
         }
@@ -121,8 +62,8 @@ async function testProxy(proxy) {
     return null; // Return null if the proxy fails
 }
 
-// Function to fetch, test proxies and send them to the group
-async function sendProxiesToGroup() {
+// Function to fetch, test proxies and send them to the channel
+async function sendProxiesToChannel() {
     const proxies = await getProxies();
     console.log(`Total proxies fetched: ${proxies.length}`);
 
@@ -137,21 +78,30 @@ async function sendProxiesToGroup() {
         fs.writeFile('LokaXProxy.txt', proxyList, (err) => {
             if (err) {
                 console.error('Error writing to file', err);
-                bot.sendMessage(groupId, "Failed to create proxy file.");
+                bot.sendMessage(channelId, "Failed to create proxy file.");
                 return;
             }
 
-            // Send the file to the group
-            bot.sendDocument(groupId, 'LokaXProxy.txt', {}, { caption: "Here are the active proxies:" });
+            // Custom message with proxy details
+            const message = `
+BERSERK PROXY [24/7]🔥
+Count: ${workingProxies.length}
+Alive proxy: ${workingProxies.length}
+
+FREE PROXY AT https://t.me/berserkproxy
+            `;
+            
+            // Send the file to the channel with the custom message
+            bot.sendDocument(channelId, 'LokaXProxy.txt', {}, { caption: message });
         });
     } else {
-        bot.sendMessage(groupId, "No active proxies found.");
+        bot.sendMessage(channelId, "No active proxies found.");
     }
 }
 
 // Schedule sending the proxy list every 5 minutes (300,000 milliseconds)
 setInterval(() => {
-    sendProxiesToGroup();
+    sendProxiesToChannel();
 }, 300000); // 300,000 milliseconds = 5 minutes
 
 // Log bot start
